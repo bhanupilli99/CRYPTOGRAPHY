@@ -1,0 +1,22 @@
+#include<stdio.h>
+void caesarCipher(char *str, int k) {
+    while (*str) {
+        if (*str >= 'a' && *str <= 'z') {
+            *str = 'a' + ( ((*str - 'a') + k) % 26 );
+        } else if (*str >= 'A' && *str <= 'Z') {
+            *str = 'A' + ( ((*str - 'A') + k) % 26 );
+        }
+        str++;
+    }
+}
+int main() {
+    char str[100];
+    int k;
+    printf("Enter the string: ");
+    fgets(str, sizeof(str), stdin);
+    printf("Enter the shift value (1-25): ");
+    scanf("%d", &k);
+    caesarCipher(str, k);
+    printf("Encrypted string: %s", str);
+    return 0;
+}
