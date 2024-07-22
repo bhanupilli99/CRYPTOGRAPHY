@@ -1,0 +1,60 @@
+#include <stdio.h>
+#include <string.h>
+
+#define CIPHERTEXT "53‡‡†305))6*;4826)4‡.)4‡);806*;48†8¶60))85;;]8*;:‡*8†83 (88)5*†;46(;88*96*?;8)‡(;485);5†2:‡(;4956*2(5—4)8¶8* ;4069285);)6†8)4‡‡;1(‡9;48081;8:8‡1;48†85;4)485†528806*81 (‡9;48;(88;4(‡?34;48)4‡;161;:188;‡?;"
+#define ALPHABET_SIZE 256
+
+void analyzeFrequency(const char *text, int freq[]) {
+    memset(freq, 0, ALPHABET_SIZE * sizeof(int));
+    for (int i = 0; text[i] != '\0'; i++) {
+        freq[(unsigned char)text[i]]++;
+    }
+}
+
+char guessCharacter(int freq[], const char *candidates) {
+    int maxFreq = 0;
+    char guess = 0;
+    for (const char *p = candidates; *p != '\0'; p++) {
+        if (freq[(unsigned char)*p] > maxFreq) {
+            maxFreq = freq[(unsigned char)*p];
+            guess = *p;
+        }
+    }
+    return guess;
+}
+
+void createSubstitutionMap(char map[], char guess_e, char guess_t, char guess_h) {
+    for (int i = 0; i < ALPHABET_SIZE; i++) {
+        map[i] = (char)i;
+    }
+    map[(unsigned char)guess_e] = 'e';
+    map[(unsigned char)guess_t] = 't';
+    map[(unsigned char)guess_h] = 'h';
+}
+
+void applySubstitution(const char *text, const char map[], char *output) {
+    for (int i = 0; text[i] != '\0'; i++) {
+        output[i] = map[(unsigned char)text[i]];
+    }
+    output[strlen(text)] = '\0';
+}
+
+int main() {
+    int freq[ALPHABET_SIZE];
+    analyzeFrequency(CIPHERTEXT, freq);
+
+    // Guessing the characters based on frequency analysis and common English patterns
+    char guess_e = guessCharacter(freq, "‡†");
+    char guess_t = guessCharacter(freq, ";)(");
+    char guess_h = guessCharacter(freq, ":8");
+
+    char substitutionMap[ALPHABET_SIZE];
+    createSubstitutionMap(substitutionMap, guess_e, guess_t, guess_h);
+
+    char decryptedMessage[strlen(CIPHERTEXT) + 1];
+    applySubstitution(CIPHERTEXT, substitutionMap, decryptedMessage);
+
+    printf("Decrypted message: %s\n", decryptedMessage);
+
+    return 0;
+}
