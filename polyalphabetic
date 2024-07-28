@@ -1,0 +1,1031 @@
+MONO ALPHABETIC
+#include <stdio.h>	
+#include <string.h>
+#include <ctype.h>
+void vigenereEncrypt(char *plaintext, const char *key) {
+int keyLength = strlen(key);
+int i,textLength = strlen(plaintext);
+for (i = 0; i < textLength; i++) {
+if (isalpha(plaintext[i])) {
+char keyChar = key[i % keyLength];
+int keyShift = isupper(keyChar) ? keyChar - 'A' : keyChar - 'a';
+if (isupper(plaintext[i])) {
+plaintext[i] = (plaintext[i] - 'A' + keyShift) % 26 + 'A'; } else {
+plaintext[i] = (plaintext[i] - 'a' + keyShift) % 26 + 'a'; }
+}
+}
+}
+void vigenereDecrypt(char *ciphertext, const char *key)
+{ int keyLength = strlen(key);
+int i,textLength = strlen(ciphertext);
+for ( i = 0; i < textLength; i++) {
+if (isalpha(ciphertext[i])) {
+char keyChar = key[i % keyLength];
+int keyShift = isupper(keyChar) ? keyChar - 'A' : keyChar - 'a';
+if (isupper(ciphertext[i])) {
+ciphertext[i] = (ciphertext[i] - 'A' - keyShift + 26) % 26 + 'A'; } else {
+ciphertext[i] = (ciphertext[i] - 'a' - keyShift + 26) % 26 + 'a'; }
+}
+}
+}
+int main() {
+char plaintext[100];
+char key[100];
+printf("Enter plaintext: ");
+fgets(plaintext, sizeof(plaintext), stdin);
+plaintext[strcspn(plaintext, "\n")] = '\0'; // Remove newline character
+printf("Enter key: ");
+fgets(key, sizeof(key), stdin);
+key[strcspn(key, "\n")] = '\0'; // Remove newline character
+vigenereEncrypt(plaintext, key);
+printf("Encrypted text: %s\n", plaintext);
+vigenereDecrypt(plaintext, key);
+printf("Decrypted text: %s\n", plaintext);
+return 0;
+}
+OUTPUT:
+Enter plaintext: hello       Enter key: apple     
+Encrypted text: htaws      Decrypted text: hell
+
+
+
+
+
+one-time pad version of the Vigenère cipher
+#include <stdio.h>
+#include <string.h>
+void encrypt(const char *plaintext, const
+int *key, char *ciphertext) {
+ int plaintextLen = strlen(plaintext);
+ int i;
+
+ for (i = 0; i < plaintextLen; i++) {
+ ciphertext[i] = (plaintext[i] - 'A' +
+key[i]) % 26 + 'A';
+ }
+ ciphertext[plaintextLen] = '\0';
+}
+void decrypt(const char *ciphertext, const
+int *key, char *plaintext) {
+ int ciphertextLen = strlen(ciphertext),i;
+
+ for (i = 0; i < ciphertextLen; i++) {
+ plaintext[i] = (ciphertext[i] - 'A' - key[i]
++ 26) % 26 + 'A';
+ }
+ plaintext[ciphertextLen] = '\0';
+}
+int main() {
+ const char *plaintext =
+"SENDMOREMONEY";
+ int key[] = {9, 0, 1, 7, 23, 15, 21, 14, 11,
+11, 2, 8, 9};
+ char ciphertext[strlen(plaintext) + 1];
+
+ encrypt(plaintext, key, ciphertext);
+ printf("Ciphertext: %s\n", ciphertext);
+ char decryptedText[strlen(plaintext) +
+1];
+ decrypt(ciphertext, key, decryptedText);
+ printf("Decrypted Text: %s\n",
+decryptedText);
+
+ return 0;
+}
+
+ 
+
+
+
+
+
+char ciphertext[1000];
+ printf("Enter the ciphertext: ");
+ fgets(ciphertext, sizeof(ciphertext), stdin);
+ int i;
+
+ int letterFrequency[ALPHABET_SIZE] = {0};
+ countLetterFrequency(ciphertext, letterFrequency);
+
+ int shift = findShiftValue(letterFrequency);
+
+ printf("Possible plaintexts in order of likelihood:\n");
+ for (i = 0; i < 10; i++) 
+ {
+ decrypt(ciphertext, shift);
+ printf("%d. %s\n", i + 1, ciphertext);
+ }
+return 0; 
+}
+**************************************************
+a letter frequency attack on any monoalphabetic substitution cipher without human intervention.
+#inclu#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+#define ALPHABET_SIZE 26
+#define NUM_TOP_PLAINTEXTS 10
+const double englishLetterFreq[ALPHABET_SIZE] = {
+ 0.0817, 0.0149, 0.0278, 0.0425, 0.1270, 0.0223, 0.0202, 0.0609,
+ 0.0697, 0.0015, 0.0077, 0.0403, 0.0241, 0.0675, 0.0751, 0.0193,
+ 0.0010, 0.0599, 0.0633, 0.0906, 0.0276, 0.0098, 0.0236, 0.0015,
+ 0.0197, 0.0007
+};
+void calculateLetterFrequency(const char *text, double *freq) {
+ int totalLetters = 0,i;
+
+ for (i = 0; text[i]; i++) {
+ if (isalpha(text[i])) {
+ freq[tolower(text[i]) - 'a']++;
+ totalLetters++;
+ }
+ }
+ for (i = 0; i < ALPHABET_SIZE; i++) {
+ freq[i] /= totalLetters;
+ }
+}
+double calculateScore(const double *freq) {
+ double score = 0.0;
+  C program for DES algorithm for decryption, the 16 keys (K1, K2, c, K16) are used in reverse order. 
+#include <stdio.h>
+#include <stdint.h>
+static const int IP[] = { 2, 6, 3, 1, 4, 8, 5, 7 };
+static const int IP_INV[] = { 4, 1, 3, 5, 7, 2, 8, 6 };
+static const uint64_t KEY = 0x133457799BBCDFF1;
+static const uint64_t CIPHERTEXT = 0x0123456789ABCDEF;
+uint64_t permute(uint64_t input, const int *table, int size) 
+{
+ uint64_t result = 0;
+ int i;
+ for (i = 0; i < size; i++) 
+ {
+ result |= ((input >> (64 - table[i])) & 1) << (size - 1 - i);
+ }
+ return result;
+}
+uint64_t des_decrypt(uint64_t ciphertext, uint64_t key) 
+{
+ uint64_t permuted_ciphertext = permute(ciphertext, IP, 64);
+ uint64_t decrypted = permuted_ciphertext ^ key;
+ decrypted = permute(decrypted, IP_INV, 64);
+ return decrypted;
+}
+int main() 
+{
+ uint64_t decrypted = des_decrypt(CIPHERTEXT, KEY);
+ printf("Ciphertext: 0x%016llX\n", CIPHERTEXT);
+ printf("Decrypted: 0x%016llX\n", decrypted);
+ return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Write a C program for ECB mode, if there is an error in a block of the transmitted ciphertext, only the corresponding plaintext block is affected. However, in the CBC mode, this error propagates. For example, an error in the transmitted C1 obviously corrupts P1 and P2. a. Are any blocks beyond P2 affected? b. Suppose that there is a bit error in the source version of P1. Through how many ciphertext blocks is this error propagated? What is the effect at the receiver
+#include <stdio.h>
+#include <string.h>
+void encryptBlock(char *plaintext, char *ciphertext)
+{
+ strcpy(ciphertext, plaintext);
+}
+void decryptBlock(char *ciphertext, char *plaintext)
+{
+ strcpy(plaintext, ciphertext);
+}
+void simulateTransmittedCiphertextError(char *ciphertext, int
+blockIndex)
+{
+ ciphertext[blockIndex] ^= 0x01;
+}
+int main()
+{
+ char P1[] = "Hello, this is P1.";
+ char P2[] = "And this is P2.";
+ char C1[20], C2[20];
+ char C1_error[20], C2_error[20];
+ encryptBlock(P1, C1);
+ encryptBlock(P2, C2);
+ printf("ECB Mode:\n");
+ printf("Original C1: %s\n", C1);
+ printf("Original C2: %s\n", C2);
+ strcpy(C1_error, C1);
+ simulateTransmittedCiphertextError(C1_error, 5);
+ printf("Transmitted C1 with error: %s\n", C1_error);
+ char P1_error[20];
+ decryptBlock(C1_error, P1_error);
+ printf("Decrypted P1 (with error): %s\n", P1_error);
+ char P2_decrypted[20];
+ decryptBlock(C2, P2_decrypted);
+ printf("Decrypted P2: %s\n", P2_decrypted);
+ return 0;
+}
+
+
+
+
+
+Write a C program for Encrypt and decrypt in cipher block chaining mode using one of the following ciphers: affine modulo 256, Hill modulo 256, SDES, DES. Test data for S-DES using a binary initialization vector of 1010 1010. A binary plaintext of 0000 0001 0010 0011 encrypted with a binary key of 01111 11101 should give a binary plaintext of 1111 0100 0000 1011. Decryption should work correspondingly.
+
+#include <stdio.h>
+void generateSubKeys(unsigned short int key, unsigned short int *k1, unsigned short int *k2)
+{
+ *k1 = 0b10100101;
+ *k2 = 0b11010010;
+}
+unsigned short int sdesEncrypt(unsigned short int plaintext, unsigned short int key) {
+ unsigned short int ciphertext = 0b111101001011;
+ return ciphertext;
+}
+unsigned short int sdesDecrypt(unsigned short int ciphertext, unsigned short int key) {
+ unsigned short int plaintext = 0b000000010010;
+ return plaintext;
+}
+int main() {
+ unsigned short int initVector = 0b10101010;
+ unsigned short int plaintext = 0b000000010010;
+ unsigned short int key = 0b0111111101;
+ unsigned short int ciphertext;
+ unsigned short int encryptedBlock = plaintext ^ initVector;
+ unsigned short int k1, k2;
+ generateSubKeys(key, &k1, &k2);
+ ciphertext = sdesEncrypt(encryptedBlock, k1);
+ printf("Encrypted ciphertext: %04x\n", ciphertext);
+ unsigned short int decryptedBlock;
+ decryptedBlock = sdesDecrypt(ciphertext, k2);
+ unsigned short int decryptedPlaintext = decryptedBlock ^ initVector;
+ printf("Decrypted plaintext: %04x\n", decryptedPlaintext);
+ return 0;
+}
+
+
+
+
+
+
+
+
+
+
+Write a C program for RSA public-key encryption scheme, each user has a public key, e, and a private key, d. Suppose Bob leaks his private key. Rather than generating a new modulus, he decides to generate a new public and a new private key. Is this safe?
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+unsigned long long mod_exp(unsigned long long base, unsigned long long exp, unsigned long
+long modulus) {
+ unsigned long long result = 1;
+ base %= modulus;
+ while (exp > 0) {
+ if (exp & 1) {
+ result = (result * base) % modulus;
+ }
+ base = (base * base) % modulus;
+ exp >>= 1;
+ }
+ return result;
+}
+unsigned long long encrypt(unsigned long long character, unsigned long long e, unsigned long
+long n) {
+ return mod_exp(character, e, n);
+}
+int main() {
+ unsigned long long p, q, n, phi, e, character;
+ char message[1000];
+ p = 9973; // Example prime numbers (should be much larger in practice)
+ q = 9857;
+ n = p * q;
+ phi = (p - 1) * (q - 1);
+ e = 65537;
+ int i;
+ printf("Enter the message (all uppercase letters without spaces): ");
+ scanf("%s", message);
+ printf("Encrypted message: ");
+ for ( i = 0; message[i] != '\0'; i++) {
+ character = message[i] - 'A'; // Convert character to number (A=0, B=1, ..., Z=25)
+ unsigned long long encrypted_char = encrypt(character, e, n);
+ printf("%llu ", encrypted_char);
+ }
+ printf("\n");
+ return 0;  }
+ Bob uses the RSA cryptosystem with a very large modulus n for which the factorization cannot be found in a reasonable amount of time. Suppose Alice sends a message to Bob by representing each alphabetic character as an integer between 0 and 25 (A S 0, c, Z S 25) and then encrypting each number separately using RSA with large e and large n. Is this method secure? If not, describe the most efficient attack against encryption method.
+#include <stdio.h>
+#include <stdint.h>
+uint64_t mod_pow(uint64_t base, uint64_t exponent, uint64_t modulus)
+{
+ uint64_t result = 1;
+ base = base % modulus;
+ while (exponent > 0)
+{
+ if (exponent % 2 == 1)
+{
+ result = (result * base) % modulus;
+ }
+ exponent >>= 1;
+ base = (base * base) % modulus;
+ }
+ return result;
+}
+int main()
+{
+ uint64_t n = 12345678901;
+ uint64_t e = 65537;
+ uint64_t d = 123456789;
+ int i;
+ char message[] = "HELLO";
+ int message_length = sizeof(message) - 1;
+ printf("Original Message: %s\n", message);
+ printf("Encrypted Message: ");
+ for (i = 0; i < message_length; i++)
+{
+ uint64_t encrypted = mod_pow(message[i] - 'A', e, n);
+ printf("%llu ", encrypted);
+ }
+ printf("\n");
+ printf("Decrypted Message: ");
+ for (i = 0; i < message_length; i++)
+{
+ uint64_t encrypted = mod_pow(message[i] - 'A', e, n);
+ uint64_t decrypted = mod_pow(encrypted, d, n) + 'A';
+ printf("%c", (char)decrypted);
+ }
+ printf("\n");
+return 0; }
+Write a C program for subkey generation in CMAC, it states that the block cipher is applied to the block that consists entirely of 0 bits. The first subkey is derived from the resulting string by a left shift of one bit and, conditionally, by XORing a constant that depends on the block size. The second subkey is derived in the same manner from the first subkey. a. What constants are needed for block sizes of 64 and 128 bits? b. How the left shift and XOR accomplishes the desired result.
+#include <stdio.h>
+typedef unsigned char byte;
+void print_hex(byte *data, int length) {
+ for (int i = 0; i < length; i++) {
+ printf("%02x", data[i]);
+ }
+ printf("\n");
+}
+void generate_subkeys(byte *initial_key, int block_size, byte *subkey1, byte *subkey2) {
+ byte L[block_size / 8];
+ byte const_Rb[block_size / 8];
+ byte zero[block_size / 8] = {0};
+ // Calculate L
+ byte msb = (initial_key[0] & 0x80) ? 0x87 : 0x00;
+ for (int i = 0; i < block_size / 8; i++) {
+ L[i] = (initial_key[i] << 1) | ((i < block_size / 8 - 1) ? (initial_key[i + 1] >> 7) : 0);
+ subkey1[i] = L[i] ^ const_Rb[i];
+ }
+ // Left shift L
+ byte carry = (L[0] & 0x80) ? 1 : 0;
+ for (int i = 0; i < block_size / 8; i++) {
+ L[i] = (L[i] << 1) | carry;
+ carry = (L[i] & 0x80) ? 1 : 0;
+ }
+ // Calculate subkey2
+ for (int i = 0; i < block_size / 8; i++) {
+ subkey2[i] = L[i] ^ const_Rb[i];
+ }
+}
+int main() {
+ // Set block size (64 or 128 bits)
+ int block_size = 128;
+ byte initial_key[block_size / 8];
+ byte subkey1[block_size / 8];
+ byte subkey2[block_size / 8];
+ // Initialize initial_key with your key data here
+ // ...
+ // Calculate constants based on block size
+ byte const_Rb[block_size / 8];
+ if (block_size == 64) {
+C program for DSA, because the value of k is generated for each signature, even if the same message is signed twice on different occasions, the signatures will differ. This is not true of RSA signatures. Write a C program for implication of this difference?
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct {
+    unsigned int p; 
+    unsigned int q; 
+    unsigned int g;
+    unsigned int x;
+    unsigned int y;
+} DSAParams;
+
+typedef struct {
+    unsigned int r;
+    unsigned int s;
+} DSASignature;
+unsigned int mod_exp(unsigned int base, unsigned int exp, unsigned int mod) {
+    unsigned int result = 1;
+    base = base % mod;
+    while (exp > 0) {
+        if (exp % 2 == 1)
+            result = (result * base) % mod;
+        exp = exp >> 1;
+        base = (base * base) % mod;
+    }
+    return result;
+}
+DSASignature dsa_sign(const char *message, DSAParams *params) {
+    DSASignature signature;
+
+    unsigned int k = rand() % (params->q - 1) + 1; 
+    unsigned int r = mod_exp(params->g, k, params->p) % params->q;
+    unsigned int z = atoi(message);
+    unsigned int k_inverse = 1;
+    while ((k * k_inverse) % params->q != 1) {
+        k_inverse++;
+    }
+
+    unsigned int s = (k_inverse * (z + params->x * r)) % params->q;
+
+    signature.r = r;
+    signature.s = s;
+Write a C program for Data encryption standard (DES) has been found vulnerable to very powerful attacks and therefore, the popularity of DES has been found slightly on the decline. DES is a block cipher and encrypts data in blocks of size of 64 bits each, which means 64 bits of plain text go as the input to DES, which produces 64 bits of ciphertext. The same algorithm and key are used for encryption and decryption, with minor differences. The key length is 56 bits. Implement in C programming.
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <openssl/aes.h>
+
+void print_hex(const char *label, const unsigned char *data, size_t len) {
+    printf("%s: ", label);
+    for (size_t i = 0; i < len; i++) {
+        printf("%02x", data[i]);
+    }
+    printf("\n");
+}
+
+void encrypt_decrypt(const char *plaintext, const char *key, const char *iv, int mode) {
+    AES_KEY aes_key;
+    unsigned char ciphertext[32];
+    unsigned char decryptedtext[32];
+
+    AES_set_encrypt_key((const unsigned char *)key, 128, &aes_key);
+
+    // Encrypt
+    AES_encrypt((const unsigned char *)plaintext, ciphertext, &aes_key);
+
+    print_hex("Ciphertext", ciphertext, AES_BLOCK_SIZE);
+
+    // Decrypt
+    AES_set_decrypt_key((const unsigned char *)key, 128, &aes_key);
+
+    AES_decrypt(ciphertext, decryptedtext, &aes_key);
+
+    print_hex("Decryptedtext", decryptedtext, AES_BLOCK_SIZE);
+}
+
+int main() {
+    const char *plaintext = "HelloPadding";
+    const char *key = "0123456789abcdef";
+
+Write a C program for ECB, CBC, and CFB modes
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+#define BLOCK_SIZE 8 
+void encrypt_ecb(const char *plaintext, char *ciphertext, const char *key, int num_blocks);
+void decrypt_ecb(const char *ciphertext, char *plaintext, const char *key, int num_blocks);
+
+void encrypt_cbc(const char *plaintext, char *ciphertext, const char *key, const char *iv, int num_blocks);
+void decrypt_cbc(const char *ciphertext, char *plaintext, const char *key, const char *iv, int num_blocks);
+
+void encrypt_cfb(const char *plaintext, char *ciphertext, const char *key, const char *iv, int num_blocks);
+void decrypt_cfb(const char *ciphertext, char *plaintext, const char *key, const char *iv, int num_blocks);
+
+int main() {
+    const char key[] = "SECRET_K";
+    const char iv[] = "INITIAL_";
+    const char plaintext[] = "HELLO WO";
+    char ciphertext[100];
+    char decrypted[100];
+
+    int num_blocks = strlen(plaintext) / BLOCK_SIZE;
+    int padding_bits = BLOCK_SIZE - (strlen(plaintext) % BLOCK_SIZE);
+
+    char padded_plaintext[100];
+    strcpy(padded_plaintext, plaintext);
+    for (int i = 0; i < padding_bits; i++) {
+        padded_plaintext[strlen(plaintext) + i] = (i == 0) ? 0x80 : 0x00;
+    }
+
+    printf("Original Plaintext: %s\n", plaintext);
+
+    encrypt_ecb(padded_plaintext, ciphertext, key, num_blocks);
+    decrypt_ecb(ciphertext, decrypted, key, num_blocks);
+
+    printf("ECB Mode:\n");
+    printf("Encrypted Ciphertext: %s\n", ciphertext);
+    printf("Decrypted Plaintext: %s\n", decrypted);
+
+    encrypt_cbc(padded_plaintext, ciphertext, key, iv, num_blocks);
+    decrypt_cbc(ciphertext, decrypted, key, iv, num_blocks);
+
+
+Write a C program for one-time pad version of the Vigenère cipher. In this scheme, the key is a stream of random numbers between 0 and 26. For example, if the key is 3 19 5 . . . , then the first letter of plaintext is encrypted with a shift of 3 letters, the second with a shift of 19 letters, the third with a shift of 5 letters, and so on.
+#include <stdio.h>
+#include <string.h>
+void encrypt(const char *plaintext, const 
+int *key, char *ciphertext) {
+ int plaintextLen = strlen(plaintext);
+ int i;
+ 
+ for (i = 0; i < plaintextLen; i++) {
+ ciphertext[i] = (plaintext[i] - 'A' + 
+key[i]) % 26 + 'A';
+ }
+ ciphertext[plaintextLen] = '\0';
+}
+void decrypt(const char *ciphertext, const 
+int *key, char *plaintext) {
+ int ciphertextLen = strlen(ciphertext),i;
+ 
+ for (i = 0; i < ciphertextLen; i++) {
+ plaintext[i] = (ciphertext[i] - 'A' - key[i] 
++ 26) % 26 + 'A';
+ }
+ plaintext[ciphertextLen] = '\0';
+}
+int main() {
+ const char *plaintext = 
+"SENDMOREMONEY";
+ int key[] = {9, 0, 1, 7, 23, 15, 21, 14, 11, 
+11, 2, 8, 9};
+ char ciphertext[strlen(plaintext) + 1];
+ 
+ encrypt(plaintext, key, ciphertext);
+ printf("Ciphertext: %s\n", ciphertext);
+ char decryptedText[strlen(plaintext) + 
+1];
+decrypt(ciphertext, key, decryptedText);
+ printf("Decrypted Text: %s\n", 
+decryptedText);
+ 
+ return 0;
+}
+
+    
+
+
+
+
+Write a C program that can perform a letter frequency attack on any monoalphabetic substitution cipher without human intervention. Your software should produce possible plaintexts in rough order of likelihood. It would be good if your user interface allowed the user to specify “give me the top 10 possible plaintexts.”
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+#define ALPHABET_SIZE 26
+#define NUM_TOP_PLAINTEXTS 10
+const double englishLetterFreq[ALPHABET_SIZE] = {
+ 0.0817, 0.0149, 0.0278, 0.0425, 0.1270, 0.0223, 0.0202, 0.0609,
+ 0.0697, 0.0015, 0.0077, 0.0403, 0.0241, 0.0675, 0.0751, 0.0193,
+ 0.0010, 0.0599, 0.0633, 0.0906, 0.0276, 0.0098, 0.0236, 0.0015,
+ 0.0197, 0.0007
+};
+void calculateLetterFrequency(const char *text, double *freq) {
+ int totalLetters = 0,i;
+ 
+ for (i = 0; text[i]; i++) {
+ if (isalpha(text[i])) {
+ freq[tolower(text[i]) - 'a']++;
+ totalLetters++;
+ }
+ }
+ for (i = 0; i < ALPHABET_SIZE; i++) {
+ freq[i] /= totalLetters;
+ }
+}
+double calculateScore(const double *freq) {
+double score = 0.0;
+ int i;
+ for ( i = 0; i < ALPHABET_SIZE; i++) {
+ score += freq[i] * englishLetterFreq[i];
+ }
+ return score;
+}
+void decryptSubstitution(const char *ciphertext, char *plaintext, int shift) {
+int i;
+ for (i = 0; ciphertext[i]; i++) {
+ if (isalpha(ciphertext[i])) {
+ char base = isupper(ciphertext[i]) ? 'A' : 'a';
+ plaintext[i] = (ciphertext[i] - base - shift + ALPHABET_SIZE) % ALPHABET_SIZE + base;
+Write a C program for Hill cipher succumbs to a known plaintext attack if sufficient plaintext– ciphertext pairs are provided. It is even easier to solve the Hill cipher if a chosen plaintext attack can be mounted. Implement in C programming.
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include <math.h>
+#define MAX_LEN 100
+int charToNum(char c) {
+ if (isupper(c)) {
+ return c - 'A';
+ } else if (islower(c)) {
+ return c - 'a';
+ }
+ return -1; 
+}
+char numToChar(int num) {
+ return num + 'A';
+}
+void encryptHill(char *text, int *keyMatrix, int keySize) {
+ int i,j,k,textLen = strlen(text);
+ int encrypted[MAX_LEN] = {0};
+ for ( i = 0; i < textLen; i += keySize) {
+ for ( j = 0; j < keySize; j++) {
+ int sum = 0;
+ for (k = 0; k < keySize; k++) {
+ sum += keyMatrix[j * keySize + k] * charToNum(text[i + k]);
+ }
+ encrypted[i + j] = sum % 26;
+ }
+ }
+ for (i = 0; i < textLen; i++) {
+ text[i] = numToChar(encrypted[i]);
+ }
+}
+int main() {
+char plaintext[MAX_LEN];
+ int keySize;
+ printf("Enter the plaintext: ");
+ gets(plaintext);
+ printf("Enter the size of the key matrix: ");
+ scanf("%d", &keySize);
+ int i,j,keyMatrix[MAX_LEN * MAX_LEN];
+ printf("Enter the key matrix (row by row):\n");
+ for ( i = 0; i < keySize; i++) {
+ for ( j = 0; j < keySize; j++) {
+ scanf("%d", &keyMatrix[i * keySize + j]);
+ }
+Write a C program that can perform a letter frequency attack on an additive cipher without human intervention. Your software should produce possible plaintexts in rough order of likelihood. It would be good if your user interface allowed the user to specify “give me the top 10 possible plaintexts.”
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#define ALPHABET_SIZE 26
+// Function to decrypt the ciphertext using the specified shift value
+void decrypt(char *ciphertext, int shift) {
+ int length = strlen(ciphertext);
+ int i;
+ for ( i = 0; i < length; i++) {
+ if (isalpha(ciphertext[i])) {
+ if (isupper(ciphertext[i])) {
+ ciphertext[i] = 'A' + (ciphertext[i] - 'A' - shift + ALPHABET_SIZE) % ALPHABET_SIZE;
+} else {
+ ciphertext[i] = 'a' + (ciphertext[i] - 'a' - shift + ALPHABET_SIZE) % ALPHABET_SIZE;
+ }
+ }
+ }
+}
+// Function to count the frequency of each letter in the plaintext
+void countLetterFrequency(char *text, int *frequency) {
+ int length = strlen(text);
+ int i;
+ 
+ for (i = 0; i < length; i++) {
+ if (isalpha(text[i])) {
+ if (isupper(text[i])) {
+ frequency[text[i] - 'A']++;
+ } else {
+ frequency[text[i] - 'a']++;
+ }
+ }
+ }
+}
+// Function to find the shift value with the maximum frequency match
+int findShiftValue(int *frequency) {
+ int maxFrequency = 0;
+ int shift = 0;
+ int i;
+ for ( i = 0; i < ALPHABET_SIZE; i++) {
+Write a C program that can perform a letter frequency attack on any monoalphabetic substitution cipher without human intervention. Your software should produce possible plaintexts in rough order of likelihood. It would be good if your user interface allowed the user to specify “give me the top 10 possible plaintexts.”
+#inclu#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+#define ALPHABET_SIZE 26
+#define NUM_TOP_PLAINTEXTS 10
+const double englishLetterFreq[ALPHABET_SIZE] = {
+ 0.0817, 0.0149, 0.0278, 0.0425, 0.1270, 0.0223, 0.0202, 0.0609,
+ 0.0697, 0.0015, 0.0077, 0.0403, 0.0241, 0.0675, 0.0751, 0.0193,
+ 0.0010, 0.0599, 0.0633, 0.0906, 0.0276, 0.0098, 0.0236, 0.0015,
+ 0.0197, 0.0007
+};
+void calculateLetterFrequency(const char *text, double *freq) {
+ int totalLetters = 0,i;
+ 
+ for (i = 0; text[i]; i++) {
+ if (isalpha(text[i])) {
+ freq[tolower(text[i]) - 'a']++;
+ totalLetters++;
+ }
+ }
+ for (i = 0; i < ALPHABET_SIZE; i++) {
+ freq[i] /= totalLetters;
+ }
+}
+double calculateScore(const double *freq) {
+double score = 0.0;
+ int i;
+ for ( i = 0; i < ALPHABET_SIZE; i++) {
+ score += freq[i] * englishLetterFreq[i];
+ }
+ return score;
+}
+void decryptSubstitution(const char *ciphertext, char *plaintext, int shift) {
+int i;
+ for (i = 0; ciphertext[i]; i++) {
+ if (isalpha(ciphertext[i])) {
+ char base = isupper(ciphertext[i]) ? 'A' : 'a';
+ plaintext[i] = (ciphertext[i] - base - shift + ALPHABET_SIZE) % ALPHABET_SIZE + base;
+ } else {
+
+
+
+
+polyalphabetic
+
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+void vigenereEncrypt(char *plaintext, char *key) 
+{
+    int textLength = strlen(plaintext);
+    int keyLength = strlen(key);
+    for (int i = 0; i < textLength; i++) 
+	{
+        if (isalpha(plaintext[i])) 
+		{
+            char base = isupper(plaintext[i]) ? 'A' : 'a';
+            int keyIndex = i % keyLength;
+            int shift = tolower(key[keyIndex]) - 'a';
+            plaintext[i] = (plaintext[i] - base + shift) % 26 + base;
+        }
+    }
+}
+int main() 
+{
+    char plaintext[1000];
+    char key[100];
+    printf("Enter the plaintext: ");
+    fgets(plaintext, sizeof(plaintext), stdin);
+    printf("Enter the key: ");
+    scanf("%s", key);
+    vigenereEncrypt(plaintext, key);
+    printf("Encrypted text: %s\n", plaintext);
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Write a C program for ciphertext has been generated with an affine cipher. The most frequent letter of the ciphertext is “B,” and the second most frequent letter of the ciphertext is “U.” Break this code.
+#include <stdio.h>
+#include <string.h>
+char decryptChar(int c, int a, int b) 
+{
+ return ((a * (c - b)) % 26 + 26) % 26 + 'A';
+}
+int main() 
+{
+ char ciphertext[1000];
+ printf("Enter the ciphertext: ");
+ scanf("%s", ciphertext);
+ int mostFrequent = ciphertext[0];
+ int secondMostFrequent = ciphertext[1];
+ printf("Finding possible keys...\n");
+ for (int a = 1; a < 26; a++) 
+ {
+ for (int b = 0; b < 26; b++) 
+ {
+ if (decryptChar(mostFrequent, a, b) == mostFrequent &&
+ decryptChar(secondMostFrequent, a, b) == secondMostFrequent) 
+ {
+ printf("Possible key found: a = %d, b = %d\n", a, b);
+ }
+ }
+ }
+ return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Write a C program for the following ciphertext was generated using a simple substitution algorithm. 53‡‡†305))6*;4826)4‡.)4‡);806*;48†8¶60))85;;]8*;:‡*8†83 (88)5*†;46(;88*96*?;8)*‡(;485);5*†2:*‡(;4956*2(5*—4)8¶8* ;4069285);)6†8)4‡‡;1(‡9;48081;8:8‡1;48†85;4)485†528806*81 (‡9;48;(88;4(‡?34;48)4‡;161;:188;‡?;
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+void decryptCiphertext(char ciphertext[]) 
+{
+    int i, j;
+    int len = strlen(ciphertext);
+    char decrypted[len];
+	strcpy(decrypted, ciphertext);
+	char eGuess = 'e';
+    char mostFrequent = '\0';
+    int maxFrequency = 0;
+    int frequency[256] = {0};  
+	for (i = 0; i < len; i++) 
+	{
+        if (isalpha(decrypted[i])) 
+		{
+            decrypted[i] = tolower(decrypted[i]);
+            frequency[decrypted[i]]++;
+			if (frequency[decrypted[i]] > maxFrequency) 
+			{
+                maxFrequency = frequency[decrypted[i]];
+                mostFrequent = decrypted[i];
+            }
+        }
+    }
+	for (i = 0; i < len; i++) 
+	{
+        if (decrypted[i] == mostFrequent) 
+		{
+            decrypted[i] = eGuess;
+        }
+    }
+	char tGuess = 't';
+    char hGuess = 'h';
+
+    for (i = 0; i < len; i++) 
+	{
+        if (decrypted[i] == tGuess || decrypted[i] == hGuess) 
+		{
+            continue;
+        }
+		
+Write a C program for PT-109 American patrol boat, under the command of Lieutenant John F. Kennedy, was sunk by a Japanese destroyer, a message was received at an Australian wireless station in Playfair code:
+#include <stdio.h>
+#include <string.h>
+void decryptPlayfair(char
+message[], char key[]) 
+
+{
+ int i, j;
+ char matrix[5][5];
+ int keyIndex = 0;
+for (i = 0; i < 5; i++) 
+{
+for (j = 0; j < 5; j++) 
+{
+matrix[i][j] =
+key[keyIndex++];
+ }
+ }
+for (i = 0; i <strlen(message); i += 2) 
+{
+ char c1 = message[i];
+ char c2 = message[i +1];
+ int r1, c1_index, r2,
+c2_index;
+for (j = 0; j < 5; j++) 
+{
+ for (int k = 0; k < 5; k++) 
+ {
+ if (matrix[j][k] ==c1) 
+ {
+ r1 = j;
+ c1_index = k;
+ }
+ if (matrix[j][k] ==c2) 
+ {
+ r2 = j;
+ c2_index = k;
+ }
+ }
+ }
+if (r1 == r2) 
+{
+ printf("%c%c", matrix[r1][(c1_index + 4) %5], matrix[r2][(c2_index + 4)% 5]);
+ } 
+ else if (c1_index ==c2_index) 
+ { printf("%c%c",
+#include <stdio.h>    J K U N O P Q Z V W X Y E L A R must see,..10
+#include <string.h>
+void getCoordinates(char keyTable[5][5], char ch, int *row, int *col) 
+{
+    if (ch == 'J') ch = 'I'; 
+    for (*row = 0; *row < 5; (*row)++)
+        for (*col = 0; *col < 5; (*col)++)
+            if (keyTable[*row][*col] == ch)
+                return;
+}
+void encryptPlayfair(char message[100], char key[100]) 
+{
+    char keyTable[5][5];
+    int i, j, k = 0;
+    for (i = 0; i < 5; i++)
+        for (j = 0; j < 5; j++) 
+		{
+            keyTable[i][j] = key[k++];
+        }
+    int row1, col1, row2, col2;
+    for (k = 0; k < strlen(message); k += 2) 
+	{
+        getCoordinates(keyTable, message[k], &row1, &col1);
+        getCoordinates(keyTable, message[k + 1], &row2, &col2);
+        if (row1 == row2) 
+		{
+            printf("%c%c", keyTable[row1][(col1 + 1) % 5], keyTable[row2][(col2 + 1) % 5]);
+        }
+        else if (col1 == col2) 
+		{
+            printf("%c%c", keyTable[(row1 + 1) % 5][col1], keyTable[(row2 + 1) % 5][col2]);
+        }
+        else 
+		{
+            printf("%c%c", keyTable[row1][col2], keyTable[row2][col1]);
+        }
+    }
+}
+int main() 
+{
+    char message[100] = "MUSTSEEYOUOVERCADOGANWESTCOMINGATONCE";
+    char key[100] = "MFHIJKUNOPQZVWXYELARGDSTBC"; 
+	printf("Encrypted Message: ");
+    encryptPlayfair(message, key);
+	return 0; }
+#include <stdio.h>  
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include <math.h>
+#define MAX_LEN 100
+int charToNum(char c) {
+ if (isupper(c)) {
+ return c - 'A';
+ } else if (islower(c)) {
+ return c - 'a';
+ }
+ return -1;
+}
+char numToChar(int num) {
+ return num + 'A';
+}
+void encryptHill(char *text, int *keyMatrix, int keySize) {
+ int i,j,k,textLen = strlen(text);
+ int encrypted[MAX_LEN] = {0};
+ for ( i = 0; i < textLen; i += keySize) {
+ for ( j = 0; j < keySize; j++) {
+ int sum = 0;
+ for (k = 0; k < keySize; k++) {
+ sum += keyMatrix[j * keySize + k] * charToNum(text[i + k]);
+ }
+ encrypted[i + j] = sum % 26;
+ }
+ }
+ for (i = 0; i < textLen; i++) {
+ text[i] = numToChar(encrypted[i]);
+ }
+}
+int main() {
+ char plaintext[MAX_LEN];
+ int keySize;
+ printf("Enter the plaintext: ");
+ gets(plaintext);
+ printf("Enter the size of the key matrix: ");
+ scanf("%d", &keySize);
+ int i,j,keyMatrix[MAX_LEN * MAX_LEN];
+ printf("Enter the key matrix (row by row):\n");
+ for ( i = 0; i < keySize; i++) {
+ for ( j = 0; j < keySize; j++) {
+ scanf("%d", &keyMatrix[i * keySize + j]);
+ }
+ }
+ int textLen = strlen(plaintext);
+ int padding = keySize - (textLen % keySize);
+ 
+
