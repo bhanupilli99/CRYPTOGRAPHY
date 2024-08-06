@@ -1,0 +1,28 @@
+#include<stdio.h>
+#include<math.h>
+int main()
+{
+	int q,r,xa,xb,pa,pb,ka,kb;
+	printf("enter the modulus value: ");
+	scanf("%d",&q);
+	printf("enter the premitive root: ");
+	scanf("%d",&r);
+	printf("enter the public key values of user a and user b: ");
+	scanf("%d%d",&xa,&xb);
+	pa=pow(r,xa);
+	pa=pa%q;
+	pb=pow(r,xb);
+	pb=pb%q;
+	printf("private key of user a: %d",pa);
+	printf("\nprivate key of user b: %d",pb);
+	ka=pow(pb,xa);
+	ka=ka%q;
+	kb=pow(pa,xb);
+	kb=kb%q;
+	printf("\nkey of user a = %d",ka);
+	printf("\nkey of user b = %d",kb);
+	if(ka==kb)
+	printf("\nsince both the keys are equal keys are valid");
+	else
+	printf("\nkeys are invalid");
+}
